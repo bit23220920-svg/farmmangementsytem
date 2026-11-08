@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>John Dhiri Intelligent Farm System</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<link rel="stylesheet" href="css/styles.css">
+<script src="js/theme.js"></script>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">John Dhiri<br><span>Intelligent Farm System</span></div>
+    <nav id="navContainer"></nav>
+    <div class="foot">
+      <div class="user-row">
+        <div class="avatar" id="avatarInitials">--</div>
+        <div class="user-meta">
+          <div class="name" id="userName">—</div>
+          <div class="role" id="userRole">—</div>
+        </div>
+      </div>
+      <button class="signout" id="signOutBtn">Sign out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="farm-picker">
+        <select id="farmPicker" aria-label="Farm"></select>
+      </div>
+      <label class="currency-picker" title="Show money in this currency">
+        <span class="cp-label">Currency</span>
+        <select id="currencyPicker" aria-label="Show money in"></select>
+      </label>
+      <div class="topbar-spacer"></div>
+      <span class="role-badge" id="topRoleBadge">—</span>
+      <div class="theme-menu">
+        <button class="icon-btn" id="themeBtn" title="Light or dark theme" aria-haspopup="menu" aria-expanded="false"></button>
+        <div class="menu" id="themeMenu" role="menu" hidden></div>
+      </div>
+      <button class="icon-btn" id="bellBtn" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.2 2.2 0 0 0 2.2-2.2h-4.4A2.2 2.2 0 0 0 12 22Zm7-6v-5a7 7 0 0 0-5-6.7V3a2 2 0 1 0-4 0v1.3A7 7 0 0 0 5 11v5l-2 2v1h16v-1l-2-2Z"/></svg>
+        <span class="dot" id="bellDot" style="display:none;"></span>
+      </button>
+    </header>
+
+    <main class="view" id="view"></main>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 id="drawerTitle">Add record</h3>
+    <button class="drawer-close" id="drawerClose">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <button class="btn btn-ghost" id="drawerCancel">Cancel</button>
+    <button class="btn btn-primary" id="drawerSave">Save</button>
+  </div>
+</aside>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

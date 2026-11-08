@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create account — John Dhiri Intelligent Farm System</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-brand">
+    <div class="mark">John Dhiri<br><span>Intelligent Farm System</span></div>
+    <div class="pitch">
+      <h1>Set up the account that matches your work.</h1>
+      <p>Choose the role that fits what you do on the farm. Your dashboard, navigation and permissions all follow from it.</p>
+    </div>
+    <div class="foot">An administrator can change your role later if needed.</div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card" style="max-width:440px;" id="authCard">
+      <div class="mark-mobile">John Dhiri Intelligent Farm System</div>
+
+      <div id="formView">
+        <h2>Create your account</h2>
+        <p class="sub">We'll email you a link to confirm your address before you can sign in.</p>
+
+        <div id="errorBox" class="auth-error" style="display:none;"></div>
+
+        <form id="signupForm" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="firstName">First name</label>
+              <input id="firstName" type="text" required placeholder="Jane">
+            </div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <input id="lastName" type="text" required placeholder="Mwansa">
+            </div>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" type="email" required placeholder="you@yourfarm.com">
+          </div>
+          <div class="field">
+            <label for="phone">Phone <span style="font-weight:400;color:var(--ink-faint);">(optional)</span></label>
+            <input id="phone" type="tel" placeholder="+260 …">
+          </div>
+
+          <div id="passwordFieldHost"></div>
+          <div id="confirmFieldHost"></div>
+
+          <div class="field">
+            <label>Your role</label>
+            <div class="role-select-grid" id="roleGrid"></div>
+            <p class="help-text">This decides which modules appear in your sidebar.</p>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn" style="margin-top:6px;">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+      </div>
+
+      <div id="successView" class="auth-status" style="display:none;">
+        <div class="icon-circle">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+        </div>
+        <h2>Check your email</h2>
+        <p class="sub" id="successEmailLine">We've sent a confirmation link to your email address.</p>
+        <p class="help-text">Didn't get it? Check spam, or</p>
+        <button class="btn btn-ghost" id="resendBtn" style="margin-top:10px;">Resend verification email</button>
+        <p class="auth-switch" style="margin-top:22px;">Already verified? <a href="login.html">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { Auth, ROLES } from './js/store.js';
+  import { passwordFieldHtml, wirePasswordField, passwordScore } from './js/password-ui.js';
+
+  document.getElementById('passwordFieldHost').innerHTML = passwordFieldHtml({
+    id: 'password', label: 'Password', placeholder: 'At least 8 characters', withStrength: true,
+  });
+  document.getElementById('confirmFieldHost').innerHTML = passwordFieldHtml({
+    id: 'confirm', label: 'Confirm password', placeholder: 'Repeat password', withStrength: false,
+  });
+  wirePasswordField('password', { withStrength: true });
+  wirePasswordField('confirm', { withStrength: false });
+
+  const roleGrid = document.getElementById('roleGrid');
+  let selectedRole = ROLES[0].id;
+
+  ROLES.forEach((r, i) => {
+    const el = document.createElement('label');
+    el.className = 'role-option' + (i === 0 ? ' selected' : '');
+    el.innerHTML = `
+      <input type="radio" name="role" value="${r.id}" ${i === 0 ? 'checked' : ''}>
+      <strong>${r.label}</strong>
+      <span>${r.blurb}</span>
+    `;
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedRole = r.id;
+    });
+    roleGrid.appendChild(el);
+  });
+
+  const form = document.getElementById('signupForm');
+  const errorBox = document.getElementById('errorBox');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm').value;
+
+    if (password !== confirm){
+      errorBox.textContent = 'Passwords do not match.';
+      errorBox.style.display = 'block';
+      return;
+    }
+    if (!passwordScore(password).valid){
+      errorBox.textContent = 'Password must include an uppercase letter, a lowercase letter, a number, a symbol, and be at least 8 characters.';
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating account…';
+    try{
+      await Auth.signup({ firstName, lastName, email, phone, password, role: selectedRole });
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+      document.getElementById('successEmailLine').textContent = `We've sent a confirmation link to ${email}.`;
+      document.getElementById('resendBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('resendBtn');
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        try{
+          await Auth.resendVerification(email);
+          btn.textContent = 'Sent — check your email';
+        }catch(err){
+          btn.textContent = 'Could not resend — try again';
+          btn.disabled = false;
+        }
+      });
+    }catch(err){
+      errorBox.textContent = err.message || 'Could not create your account.';
+      errorBox.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create account';
+    }
+  });
+</script>
+<script type="module" src="js/hero.js"></script>
+</body>
+</html>

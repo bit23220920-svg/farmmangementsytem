@@ -1,0 +1,32 @@
+# Netlify deploy config for the FFMS front end.
+#
+# This site is 100% static (HTML/CSS/JS) — the PHP backend deploys
+# separately (Railway; see ffms-backend/README.md) and is called over
+# fetch() from js/api.js. The backend URL lives in js/config.js — that's
+# the one file to edit once the backend is live, then redeploy this site.
+#
+# Routing note: in-app navigation (Farms, Livestock, etc.) uses URL
+# hashes (#/farms), not real paths, so no SPA catch-all rewrite is
+# needed — the browser never requests a new path for those.
+
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/"
+  to = "/login.html"
+  status = 200
+
+# Any unmatched path (typos, old bookmarks) lands on login rather than
+# Netlify's default 404 page.
+[[redirects]]
+  from = "/*"
+  to = "/login.html"
+  status = 404
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

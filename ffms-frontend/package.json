@@ -1,0 +1,14 @@
+{
+  "name": "ffms-frontend",
+  "version": "1.0.0",
+  "description": "Full Farm Management System — front end (HTML/CSS/vanilla JS, no framework, no build step)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.cjs",
+    "start": "node server.cjs"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}

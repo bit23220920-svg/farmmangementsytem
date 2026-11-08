@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — John Dhiri Intelligent Farm System</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-brand">
+    <div class="mark">John Dhiri<br><span>Intelligent Farm System</span></div>
+    <div class="pitch">
+      <h1>Every field, animal and order, in one ledger.</h1>
+      <p>John Dhiri Intelligent Farm System brings crops, livestock, inventory, labour and finance together, so nothing gets tracked on paper twice.</p>
+      <div class="role-strip">
+        <span class="role-chip">Administrator</span>
+        <span class="role-chip">Farm Owner</span>
+        <span class="role-chip">Farm Manager</span>
+        <span class="role-chip">Agronomist</span>
+        <span class="role-chip">Accountant</span>
+        <span class="role-chip">Worker</span>
+      </div>
+    </div>
+    <div class="foot">Access is scoped by role — everyone sees exactly what their work needs.</div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="mark-mobile">John Dhiri Intelligent Farm System</div>
+      <h2>Sign in</h2>
+      <p class="sub">Enter your details to reach your farm dashboard.</p>
+
+      <div id="errorBox" class="auth-error" style="display:none;"></div>
+      <div id="infoBox" class="auth-error" style="display:none;background:var(--olive-pale);color:var(--olive-dark);border-color:var(--line-strong);"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="email" required placeholder="you@yourfarm.com">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-input-wrap">
+            <input id="password" type="password" autocomplete="current-password" required placeholder="••••••••">
+            <button type="button" class="pw-toggle" data-target="password" aria-label="Show password">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <p class="help-text" style="text-align:right;margin-top:8px;"><a href="forgot-password.html" style="color:var(--olive-dark);font-weight:600;text-decoration:none;">Forgot password?</a></p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">Sign in</button>
+      </form>
+
+      <p class="auth-switch">No account yet? <a href="signup.html">Create one</a></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { Auth } from './js/store.js';
+  import { wirePasswordField } from './js/password-ui.js';
+
+  wirePasswordField('password', { withStrength: false });
+
+  const params = new URLSearchParams(window.location.search);
+  const infoBox = document.getElementById('infoBox');
+  if (params.get('verified') === '1'){
+    infoBox.textContent = 'Email verified — you can sign in now.';
+    infoBox.style.display = 'block';
+  } else if (params.get('reset') === '1'){
+    infoBox.textContent = 'Password updated — sign in with your new password.';
+    infoBox.style.display = 'block';
+  }
+
+  const form = document.getElementById('loginForm');
+  const errorBox = document.getElementById('errorBox');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.style.display = 'none';
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing in…';
+    try{
+      await Auth.login(email, password);
+      window.location.href = 'app.html';
+    }catch(err){
+      errorBox.textContent = err.message || 'Could not sign in.';
+      errorBox.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign in';
+    }
+  });
+</script>
+<script type="module" src="js/hero.js"></script>
+</body>
+</html>

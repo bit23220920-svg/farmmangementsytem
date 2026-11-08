@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify email — John Dhiri Intelligent Farm System</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-brand">
+    <div class="mark">John Dhiri<br><span>Intelligent Farm System</span></div>
+    <div class="pitch">
+      <h1>Almost there.</h1>
+      <p>Confirming your email keeps every account on this system verified and traceable in the audit log.</p>
+    </div>
+    <div class="foot">This only takes a moment.</div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="mark-mobile">John Dhiri Intelligent Farm System</div>
+      <div class="auth-status" id="statusView">
+        <div class="icon-circle" id="statusIcon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-dasharray="42" stroke-dashoffset="10"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.9s" repeatCount="indefinite"/></circle></svg>
+        </div>
+        <h2 id="statusTitle">Confirming your email…</h2>
+        <p class="sub" id="statusMessage">Hang on a moment.</p>
+        <a href="login.html" class="btn btn-primary" id="statusAction" style="display:none;margin-top:10px;">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { Auth } from './js/store.js';
+
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+  const titleEl = document.getElementById('statusTitle');
+  const msgEl = document.getElementById('statusMessage');
+  const iconEl = document.getElementById('statusIcon');
+  const actionEl = document.getElementById('statusAction');
+  const viewEl = document.getElementById('statusView');
+
+  function showResult(ok, title, message){
+    viewEl.classList.toggle('is-error', !ok);
+    iconEl.innerHTML = ok
+      ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>'
+      : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    actionEl.style.display = 'inline-flex';
+    if (ok) actionEl.href = 'login.html?verified=1';
+  }
+
+  if (!token){
+    showResult(false, 'Missing link', 'This page needs a verification link — use the one from your email.');
+  } else {
+    Auth.verifyEmail(token)
+      .then(() => showResult(true, 'Email verified', 'You can now sign in to your account.'))
+      .catch(err => showResult(false, "Couldn't verify", err.message || 'This link may have expired.'));
+  }
+</script>
+<script type="module" src="js/hero.js"></script>
+</body>
+</html>
